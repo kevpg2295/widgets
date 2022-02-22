@@ -20,17 +20,36 @@ const Search = () => {
 
       setResults(data.query.search);
     };
-    if (term) {
+
+    if (term && !results.length) {
       searchWiki();
+    } else {
+      const timeOutId = setTimeout(() => {
+        if (term) {
+          searchWiki();
+        }
+      }, 500);
+
+      return () => {
+        clearTimeout(timeOutId);
+      };
     }
-  }, [term]);
+  }, [term, results.length]);
 
   const renderedResults = results.map((result) => {
     return (
       <div className="item" key={result.pageid}>
+        <div className="right floated content">
+          <a
+            href={`https://en.wikipedia.org?curid=${result.pageid}`}
+            className="ui button"
+          >
+            Go
+          </a>
+        </div>
         <div className="content">
           <div className="header">{result.title}</div>
-          {result.snippet}
+          <span dangerouslySetInnerHTML={{ __html: result.snippet }}></span>
         </div>
       </div>
     );
